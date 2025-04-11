@@ -15,6 +15,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import com.example.pstagram.domain.Base;
 import com.example.pstagram.domain.post.Post;
 import com.example.pstagram.domain.user.User;
@@ -30,6 +32,7 @@ import com.example.pstagram.domain.user.User;
 @Getter
 @Table(name = "comment")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+
 public class Comment extends Base {
 
 	@Id
@@ -46,6 +49,9 @@ public class Comment extends Base {
 
 	@Column(nullable = false, columnDefinition = "TEXT")
 	private String content;
+
+	@Column(nullable = false)
+	private boolean deleted =false;
 
 	@Builder
 	public Comment(User user, Post post, String content) {
