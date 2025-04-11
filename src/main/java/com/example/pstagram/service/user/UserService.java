@@ -110,11 +110,10 @@ public class UserService {
 	 * 비밀번호 변경 처리
 	 *
 	 * @param requestDto 현재 비밀번호와 새 비밀번호
-	 * @param session    로그인한 사용자 세션
+	 * @param userId 로그인한 사용자 ID (세션에서 전달받음)
 	 */
 	@Transactional
-	public void updatePassword(UpdatePasswordRequestDto requestDto, HttpSession session) {
-		Long userId = (Long)session.getAttribute("userId");
+	public void updatePassword(UpdatePasswordRequestDto requestDto, Long userId) {
 		if (userId == null) {
 			throw new UnauthorizedException(messageUtil.getMessage("user.unauthorized"));
 		}
