@@ -33,16 +33,11 @@ public class CommentController {
 		@SessionAttribute(name="userId") Long userId,
 		@RequestBody CommentRequestDto commentRequestDto){
 
-		// CommentResponseDto commentResponseDto = commentService.save(userId, postId, commentRequestDto);
-		// return new ResponseEntity<>(commentResponseDto, HttpStatus.CREATED);
-
 		return ResponseEntity.ok(commentService.save(userId,postId,commentRequestDto));
 	}
 
 	@GetMapping("/comments")
 	public ResponseEntity<List<CommentResponseDto>> findByPost(@PathVariable Long postId) {
-		// List<CommentResponseDto> commentResponseDtoList = commentService.getCommentsByPost(postId);
-		// return new ResponseEntity<>(commentResponseDtoList, HttpStatus.OK); // 팀원들과 형태 맞추기!!
 
 		return ResponseEntity.ok(commentService.getCommentsByPost(postId));
 	}
@@ -54,9 +49,6 @@ public class CommentController {
 		@PathVariable Long postId,
 		@RequestBody CommentRequestDto commentRequestDto) {
 
-		// CommentResponseDto updateComment = commentService.updateComment(commentId, commentRequestDto);
-		// return new ResponseEntity<>(updateComment, HttpStatus.OK);
-
 		return ResponseEntity.ok(commentService.updateComment(commentId,userId,commentRequestDto));
 	}
 
@@ -65,8 +57,7 @@ public class CommentController {
 		@PathVariable Long commentId,
 		@PathVariable Long postId,
 		@SessionAttribute(name="userId") Long userId) {
-		// commentService.deleteComment(commentId);
-		// return new ResponseEntity<>(HttpStatus.OK);
+
 		commentService.deleteComment(userId, commentId);
 		return ResponseEntity.noContent().build();
 	}
