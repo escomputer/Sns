@@ -1,0 +1,17 @@
+### 프로필 조회 (사용자 ID로 조회)
+# @no-cookie-jar
+GET http://localhost:8080/api/users/1
+Content-Type: application/json
+
+###
+
+### 프로필 수정 (닉네임 / 소개글 수정)
+# @no-cookie-jar
+PATCH http://localhost:8080/api/users/1
+Content-Type: application/json
+Cookie: JSESSIONID={{JSESSIONID}}
+
+{
+  "nickname": "슬몽몽",
+  "bio": "안녕하세요! 저희는 끝났습니다"
+}

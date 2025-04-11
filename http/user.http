@@ -1,0 +1,185 @@
+### [회원가입] 정상 요청
+# @no-cookie-jar
+POST http://localhost:8080/api/users/signup
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "Abcd1234!",
+  "nickname": "슬몽몽"
+}
+
+###
+
+### [로그인] 정상 요청 + 쿠키 저장
+# @no-cookie-jar
+POST http://localhost:8080/api/users/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "Abcd1234!"
+}
+> {% // 쿠키 자동 저장
+    client.global.set("JSESSIONID", response.headers.valueOf("Set-Cookie").split(";")[0].split("=")[1]);
+    client.log("JSESSIONID : " + client.global.get("JSESSIONID"));
+%}
+
+###
+
+### [로그아웃]
+# @no-cookie-jar
+POST http://localhost:8080/api/users/logout
+Content-Type: application/json
+Cookie: JSESSIONID={{JSESSIONID}}
+
+### [비밀번호 변경] 정상 요청
+# @no-cookie-jar
+PUT http://localhost:8080/api/users/password
+Content-Type: application/json
+Cookie: JSESSIONID={{JSESSIONID}}
+
+{
+  "currentPassword": "Abcd1234!",
+  "newPassword": "Newpass123!"
+}
+
+###
+
+### [회원탈퇴] 정상 요청
+# @no-cookie-jar
+DELETE http://localhost:8080/api/users/delete
+Content-Type: application/json
+Cookie: JSESSIONID={{JSESSIONID}}
+
+{
+  "email": "test@example.com",
+  "currentPassword": "Newpass123!"
+}
+
+###
+
+### [회원가입] 중복 이메일
+# @no-cookie-jar
+POST http://localhost:8080/api/users/signup
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "Abcd1234!",
+  "nickname": "슬몽몽"
+}
+
+###
+
+### [로그인] 존재하지 않는 이메일
+# @no-cookie-jar
+POST http://localhost:8080/api/users/login
+Content-Type: application/json
+
+{
+  "email": "notfound@example.com",
+  "password": "Abcd1234!"
+}
+
+###
+
+### [로그인] 비밀번호 틀림
+# @no-cookie-jar
+POST http://localhost:8080/api/users/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "WrongPassword!"
+}
+
+###
+
+### [비밀번호 변경] 현재 비밀번호 틀림
+# @no-cookie-jar
+PUT http://localhost:8080/api/users/password
+Content-Type: application/json
+Cookie: JSESSIONID={{JSESSIONID}}
+
+{
+  "currentPassword": "WrongPassword123!",
+  "newPassword": "Newpass123!"
+}
+
+###
+
+### [비밀번호 변경] 같은 비밀번호
+# @no-cookie-jar
+PUT http://localhost:8080/api/users/password
+Content-Type: application/json
+Cookie: JSESSIONID={{JSESSIONID}}
+
+{
+  "currentPassword": "Newpass123!",
+  "newPassword": "Newpass123!"
+}
+
+###
+
+### [비밀번호 변경] 새 비밀번호 형식 오류 (8자 미만)
+# @no-cookie-jar
+PUT http://localhost:8080/api/users/password
+Content-Type: application/json
+Cookie: JSESSIONID={{JSESSIONID}}
+
+{
+  "currentPassword": "Abcd1234!",
+  "newPassword": "1234"
+}
+
+###
+
+### [비밀번호 변경] 새 비밀번호 형식 오류 (특수문자 없음)
+# @no-cookie-jar
+PUT http://localhost:8080/api/users/password
+Content-Type: application/json
+Cookie: JSESSIONID={{JSESSIONID}}
+
+{
+  "currentPassword": "Abcd1234!",
+  "newPassword": "Password123"
+}
+
+###
+
+### [회원탈퇴] 비밀번호 틀림
+# @no-cookie-jar
+DELETE http://localhost:8080/api/users/delete
+Content-Type: application/json
+Cookie: JSESSIONID={{JSESSIONID}}
+
+{
+  "email": "test@example.com",
+  "currentPassword": "WrongPassword123!"
+}
+
+###
+
+### [회원탈퇴] 이미 탈퇴한 사용자 ( 요청 한 번 보냈을 경우와 두 번 이상 보냈을 경우 메세지 다름)
+# @no-cookie-jar
+DELETE http://localhost:8080/api/users/delete
+Content-Type: application/json
+Cookie: JSESSIONID={{JSESSIONID}}
+
+{
+  "email": "test@example.com",
+  "currentPassword": "Newpass123!"
+}
+
+###
+
+### [비밀번호 변경] 세션 없음 (로그인 안됨)
+# @no-cookie-jar
+PUT http://localhost:8080/api/users/password
+Content-Type: application/json
+
+{
+  "currentPassword": "Newpass123!",
+  "newPassword": "Newpass999!"
+}

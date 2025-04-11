@@ -1,0 +1,87 @@
+### 댓글 등록
+# @no-cookie-jar
+POST http://localhost:8080/api/posts/1/comments
+Content-Type: application/json
+Cookie: JSESSIONID={{JSESSIONID}}
+
+{
+  "content": "댓글 달기 !!"
+}
+
+###
+
+### 게시물 댓글 전체 조회
+# @no-cookie-jar
+GET http://localhost:8080/api/posts/1/comments
+Content-Type: application/json
+
+###
+
+### 댓글 수정
+# @no-cookie-jar
+PUT http://localhost:8080/api/posts/1/comments/1
+Content-Type: application/json
+Cookie: JSESSIONID={{JSESSIONID}}
+
+{
+  "content": "수정된 댓글입니다!"
+}
+
+###
+
+### 댓글 삭제
+# @no-cookie-jar
+DELETE http://localhost:8080/api/posts/1/comments/1
+Content-Type: application/json
+Cookie: JSESSIONID={{JSESSIONID}}
+
+###
+
+### 댓글 내용 없음 (EmptyCommentContentException)
+# @no-cookie-jar
+POST http://localhost:8080/api/posts/1/comments
+Content-Type: application/json
+Cookie: JSESSIONID={{JSESSIONID}}
+
+{
+  "content": ""
+}
+
+###
+
+### 댓글 수정 시 내용 없음 (EmptyUpdateContentException)
+# @no-cookie-jar
+PUT http://localhost:8080/api/posts/1/comments/1
+Content-Type: application/json
+Cookie: JSESSIONID={{JSESSIONID}}
+
+{
+  "content": "   "
+}
+
+###
+
+### 존재하지 않는 댓글 삭제 (CommentNotFoundException)
+# @no-cookie-jar
+DELETE http://localhost:8080/api/posts/1/comments/9999
+Content-Type: application/json
+Cookie: JSESSIONID={{JSESSIONID}}
+
+###
+
+### 작성자 불일치 (UnauthorizedCommentAccessException)
+# @no-cookie-jar
+PUT http://localhost:8080/api/posts/1/comments/1
+Content-Type: application/json
+Cookie: JSESSIONID={{JSESSIONID}} # 로그인 다른 사람으로 해서 !
+
+{
+  "content": "본인 아닌 사용자의 댓글 수정 시도"
+}
+
+###
+
+### 댓글 없음 (CommentListEmptyException)
+# @no-cookie-jar
+GET http://localhost:8080/api/posts/999/comments
+Content-Type: application/json

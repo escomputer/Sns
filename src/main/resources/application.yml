@@ -1,25 +1,15 @@
 spring:
-  datasource:
-    url: jdbc:h2:mem:testdb
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+  profiles:
+    active: local
   jpa:
     hibernate:
-      ddl-auto: create
-    show-sql: true
+      ddl-auto: update
     properties:
       hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
         format_sql: true
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
+    open-in-view: false
 
-logging:
-  level:
-    org.hibernate.SQL: debug
-
-messages:
-  basename: messages
-  encoding: UTF-8
+  sql:
+    init:
+      mode: always
