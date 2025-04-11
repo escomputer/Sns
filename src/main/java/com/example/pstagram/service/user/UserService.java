@@ -1,26 +1,27 @@
 package com.example.pstagram.service.user;
 
+import lombok.RequiredArgsConstructor;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.SessionAttribute;
+import com.example.pstagram.common.ResponseCode;
 import com.example.pstagram.config.MessageUtil;
 import com.example.pstagram.config.PasswordEncoder;
 import com.example.pstagram.domain.user.User;
 import com.example.pstagram.dto.user.DeleteUserRequestDto;
 import com.example.pstagram.dto.user.LoginRequestDto;
 import com.example.pstagram.dto.user.SignUpRequestDto;
+import com.example.pstagram.dto.user.UpdatePasswordRequestDto;
 import com.example.pstagram.dto.user.UserResponseDto;
+import com.example.pstagram.exception.user.AlreadyDeletedUserException;
+import com.example.pstagram.exception.user.EmailAlreadyExistsException;
 import com.example.pstagram.exception.user.EmailNotFoundException;
 import com.example.pstagram.exception.user.InvalidPasswordException;
-import com.example.pstagram.exception.user.EmailAlreadyExistsException;
-import com.example.pstagram.exception.user.AlreadyDeletedUserException;
 import com.example.pstagram.exception.user.SamePasswordException;
 import com.example.pstagram.exception.user.UnauthorizedException;
+import com.example.pstagram.exception.user.UserNotFoundException;
 import com.example.pstagram.repository.user.UserRepository;
-import com.example.pstagram.dto.user.UpdatePasswordRequestDto;
-
-import jakarta.servlet.http.HttpSession;
-import lombok.RequiredArgsConstructor;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 사용자 인증 및 회원 관련 비즈니스 로직을 처리하는 서비스 클래스
@@ -42,7 +43,7 @@ public class UserService {
 	@Transactional
 	public UserResponseDto signup(SignUpRequestDto requestDto) {
 		if (userRepository.existsByEmail(requestDto.getEmail())) {
-			throw new EmailAlreadyExistsException("이미 사용 중인 이메일입니다.");
+			throw new EmailAlreadyExistsException(ResponseCode.EMAIL_EXISTS);
 		}
 
 		String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
@@ -51,12 +52,12 @@ public class UserService {
 			.email(requestDto.getEmail())
 			.password(encodedPassword)
 			.nickname(requestDto.getNickname())
-			.bio(null)
+			.bio(requestDto.getBio())
 			.build();
 
 		userRepository.save(user);
 
-		return new UserResponseDto(user.getId(), user.getEmail(), user.getNickname());
+		return new UserResponseDto(user.getId(), user.getEmail(), user.getNickname(), user.getBio());
 	}
 
 	/**
@@ -68,13 +69,13 @@ public class UserService {
 	@Transactional(readOnly = true)
 	public UserResponseDto login(LoginRequestDto requestDto) {
 		User user = userRepository.findByEmail(requestDto.getEmail())
-			.orElseThrow(() -> new EmailNotFoundException("존재하지 않는 이메일입니다."));
+			.orElseThrow(() -> new EmailNotFoundException(ResponseCode.EMAIL_NOT_FOUND));
 
 		if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
-			throw new InvalidPasswordException("비밀번호가 일치하지 않습니다.");
+			throw new InvalidPasswordException(ResponseCode.PASSWORD_INVALID);
 		}
 
-		return new UserResponseDto(user.getId(), user.getEmail(), user.getNickname());
+		return new UserResponseDto(user.getId(), user.getEmail(), user.getNickname(), user.getBio());
 	}
 
 	/**
@@ -86,19 +87,17 @@ public class UserService {
 	public void deleteUser(DeleteUserRequestDto requestDto) {
 		User user = userRepository.findByEmail(requestDto.getEmail())
 			.orElseThrow(() -> new EmailNotFoundException(
-				messageUtil.getMessage("user.email.not-found")
-			));
+				ResponseCode.EMAIL_NOT_FOUND)
+			);
 
 		if (user.getDeletedAt() != null) {
 			throw new AlreadyDeletedUserException(
-				messageUtil.getMessage("user.already-deleted")
+				ResponseCode.USER_ALREADY_DELETED
 			);
 		}
 
 		if (!passwordEncoder.matches(requestDto.getCurrentPassword(), user.getPassword())) {
-			throw new InvalidPasswordException(
-				messageUtil.getMessage("user.password.invalid")
-			);
+			throw new InvalidPasswordException(ResponseCode.PASSWORD_INVALID);
 		}
 
 		// Soft delete 처리
@@ -110,27 +109,32 @@ public class UserService {
 	 * 비밀번호 변경 처리
 	 *
 	 * @param requestDto 현재 비밀번호와 새 비밀번호
-	 * @param userId 로그인한 사용자 ID (세션에서 전달받음)
+	 * @param userId    로그인한 사용자 세션
 	 */
 	@Transactional
-	public void updatePassword(UpdatePasswordRequestDto requestDto, Long userId) {
+	public void updatePassword(UpdatePasswordRequestDto requestDto, @SessionAttribute("userId") Long userId) {
 		if (userId == null) {
-			throw new UnauthorizedException(messageUtil.getMessage("user.unauthorized"));
+			throw new UnauthorizedException(ResponseCode.UNAUTHORIZED);
 		}
 
 		User foundUser = userRepository.findById(userId)
-			.orElseThrow(() -> new EmailNotFoundException("사용자 정보를 찾을 수 없습니다."));
+			.orElseThrow(() -> new EmailNotFoundException(ResponseCode.EMAIL_NOT_FOUND));
 
 		if (!passwordEncoder.matches(requestDto.getCurrentPassword(), foundUser.getPassword())) {
-			throw new InvalidPasswordException(messageUtil.getMessage("user.password.invalid"));
+			throw new InvalidPasswordException(ResponseCode.PASSWORD_INVALID);
 		}
 
 		if (passwordEncoder.matches(requestDto.getNewPassword(), foundUser.getPassword())) {
-			throw new SamePasswordException(messageUtil.getMessage("user.password.same"));
+			throw new SamePasswordException(ResponseCode.PASSWORD_SAME);
 		}
 
 		String encodedNewPassword = passwordEncoder.encode(requestDto.getNewPassword());
 		foundUser.updatePassword(encodedNewPassword);
+	}
+
+	public User getUser(Long userId) {
+		return userRepository.findById(userId)
+			.orElseThrow(() -> new UserNotFoundException(ResponseCode.FRIEND_NOT_FOUND));
 	}
 
 }

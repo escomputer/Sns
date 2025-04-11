@@ -1,18 +1,28 @@
 package com.example.pstagram.exception.user;
 
+import com.example.pstagram.common.ResponseCode;
+
 /**
  * 로그인 시, 비밀번호가 일치하지 않을 경우 발생하는 예외
  */
 
 public class InvalidPasswordException extends RuntimeException {
 
-	/**
-	 * 예외 메시지를 포함한 생성자
-	 *
-	 * @param message 예외 설명 메시지
-	 */
+	private final ResponseCode code;
 
-	public InvalidPasswordException(String message) {
-		super(message);
+	/**
+	 * 메시지를 받아 부모 생성자에 전달하는 생성자입니다.
+	 *
+	 * @param code message.properties의 키값을 가져옴)
+	 */
+	public InvalidPasswordException(ResponseCode code) {
+
+		super(code.getMessageKey());
+		this.code = code;
+	}
+
+	public ResponseCode getCode() {
+		return code;
 	}
 }
+

@@ -2,14 +2,14 @@ package com.example.pstagram.repository.user;
 
 import java.util.Optional;
 
-import com.example.pstagram.domain.user.User;
-import com.example.pstagram.exception.user.EmailNotFoundException;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
+import com.example.pstagram.common.ResponseCode;
+import com.example.pstagram.domain.user.User;
+import com.example.pstagram.exception.user.EmailNotFoundException;
 
 /**
  * 사용자(User) 엔티티에 대한 데이터베이스 접근을 담당하는 레포지토리
@@ -47,7 +47,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	// 사용예 : User user = userRepository.findByIdOrThrow(userId);
 	default User findByIdOrThrow(Long id) {
 		return findById(id)
-			.orElseThrow(() -> new EmailNotFoundException("사용자를 찾을 수 없습니다."));
+			.orElseThrow(() -> new EmailNotFoundException(ResponseCode.EMAIL_NOT_FOUND));
 	}
 
 }

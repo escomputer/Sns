@@ -36,4 +36,5 @@ out/
 ### VS Code ###
 .vscode/
 
+#로컬 전용 설정 파일 무시
 src/main/resources/application-local.yml

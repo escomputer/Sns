@@ -5,21 +5,21 @@ Content-Type: application/json
 Cookie: JSESSIONID={{JSESSIONID}}
 
 {
-  "content": "댓글 달기 !!"
+  "content": "댓글 달기2222 !!"
 }
 
 ###
 
 ### 게시물 댓글 전체 조회
 # @no-cookie-jar
-GET http://localhost:8080/api/posts/1/comments
+GET http://localhost:8080/api/posts/2/comments
 Content-Type: application/json
 
 ###
 
 ### 댓글 수정
 # @no-cookie-jar
-PUT http://localhost:8080/api/posts/1/comments/1
+PUT http://localhost:8080/api/posts/2/comments/1
 Content-Type: application/json
 Cookie: JSESSIONID={{JSESSIONID}}
 
@@ -39,7 +39,7 @@ Cookie: JSESSIONID={{JSESSIONID}}
 
 ### 댓글 내용 없음 (EmptyCommentContentException)
 # @no-cookie-jar
-POST http://localhost:8080/api/posts/1/comments
+POST http://localhost:8080/api/posts/3/comments
 Content-Type: application/json
 Cookie: JSESSIONID={{JSESSIONID}}
 

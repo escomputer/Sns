@@ -1,7 +1,8 @@
 package com.example.pstagram.config;
 
-import at.favre.lib.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
+
+import at.favre.lib.crypto.bcrypt.BCrypt;
 
 /**
  * BCrypt 알고리즘을 사용하여 비밀번호를 암호화하고 검증하는 유틸 클래스

@@ -3,6 +3,7 @@ package com.example.pstagram.dto.user;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+
 import lombok.Getter;
 
 /**
@@ -44,9 +45,13 @@ public class SignUpRequestDto {
 	@NotBlank(message = "{user.nickname.required}")
 	private final String nickname;
 
-	public SignUpRequestDto(String email, String password, String nickname) {
+	private final String bio;
+
+	public SignUpRequestDto(String email, String password, String nickname, String bio) {
 		this.email = email;
 		this.password = password;
 		this.nickname = nickname;
+		this.bio = bio;
+
 	}
 }

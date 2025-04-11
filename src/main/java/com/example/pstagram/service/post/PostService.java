@@ -1,5 +1,18 @@
 package com.example.pstagram.service.post;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.SessionAttribute;
+import com.example.pstagram.common.ResponseCode;
 import com.example.pstagram.config.MessageUtil;
 import com.example.pstagram.domain.post.Post;
 import com.example.pstagram.domain.user.User;
@@ -12,16 +25,6 @@ import com.example.pstagram.exception.user.EmailNotFoundException;
 import com.example.pstagram.exception.user.UnauthorizedException;
 import com.example.pstagram.repository.post.PostRepository;
 import com.example.pstagram.repository.user.UserRepository;
-
-import jakarta.servlet.http.HttpSession;
-import lombok.RequiredArgsConstructor;
-
-import org.springframework.data.domain.*;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 게시물 관련 비즈니스 로직을 처리하는 서비스 클래스
@@ -67,18 +70,17 @@ public class PostService {
 	 * 게시물 등록
 	 *
 	 * @param requestDto 게시물 본문
-	 * @param session 로그인한 사용자 세션
+	 * @param userId 로그인한 사용자 세션
 	 * @return 저장된 게시물 응답 DTO
 	 */
 	@Transactional
-	public PostResponseDto createPost(PostRequestDto requestDto, HttpSession session) {
-		Long userId = (Long)session.getAttribute("userId");
+	public PostResponseDto createPost(PostRequestDto requestDto, @SessionAttribute("userId") Long userId) {
 		if (userId == null) {
-			throw new UnauthorizedException("로그인이 필요합니다.");
+			throw new UnauthorizedException(ResponseCode.UNAUTHORIZED);
 		}
 
 		User user = userRepository.findById(userId)
-			.orElseThrow(() -> new EmailNotFoundException("사용자를 찾을 수 없습니다."));
+			.orElseThrow(() -> new EmailNotFoundException(ResponseCode.EMAIL_NOT_FOUND));
 
 		Post post = Post.builder()
 			.user(user)
@@ -100,24 +102,23 @@ public class PostService {
 	 *
 	 * @param postId 게시물 ID
 	 * @param requestDto 수정할 내용
-	 * @param session 로그인한 사용자
+	 * @param userId 로그인한 사용자
 	 * @return 수정된 게시물 응답
 	 */
 	@Transactional
-	public PostResponseDto updatePost(Long postId, PostRequestDto requestDto, HttpSession session) {
-		Long userId = (Long)session.getAttribute("userId");
+	public PostResponseDto updatePost(Long postId, PostRequestDto requestDto, @SessionAttribute("userId") Long userId) {
 		if (userId == null) {
-			throw new UnauthorizedException(messageUtil.getMessage("user.unauthorized"));
+			throw new UnauthorizedException(ResponseCode.UNAUTHORIZED);
 		}
 
 		Post post = postRepository.findById(postId)
 			.orElseThrow(() -> new PostNotFoundException(
-				messageUtil.getMessage("post.not-found")
+				ResponseCode.POST_NOT_FOUND
 			));
 
 		if (!post.getUser().getId().equals(userId)) {
 			throw new UnauthorizedPostAccessException(
-				messageUtil.getMessage("post.unauthorized")
+				ResponseCode.POST_UNAUTHORIZED
 			);
 		}
 
@@ -135,23 +136,22 @@ public class PostService {
 	 * 게시물 삭제
 	 *
 	 * @param postId 삭제할 게시물 ID
-	 * @param session 로그인한 사용자
+	 * @param userId 로그인한 사용자
 	 */
 	@Transactional
-	public void deletePost(Long postId, HttpSession session) {
-		Long userId = (Long)session.getAttribute("userId");
+	public void deletePost(Long postId, @SessionAttribute("userId") Long userId) {
 		if (userId == null) {
-			throw new UnauthorizedException(messageUtil.getMessage("user.unauthorized"));
+			throw new UnauthorizedException(ResponseCode.UNAUTHORIZED);
 		}
 
 		Post post = postRepository.findById(postId)
 			.orElseThrow(() -> new PostNotFoundException(
-				messageUtil.getMessage("post.not-found")
+				ResponseCode.POST_NOT_FOUND
 			));
 
 		if (!post.getUser().getId().equals(userId)) {
 			throw new UnauthorizedPostAccessException(
-				messageUtil.getMessage("post.unauthorized")
+				ResponseCode.POST_UNAUTHORIZED
 			);
 		}
 

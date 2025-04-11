@@ -6,7 +6,8 @@ Content-Type: application/json
 {
   "email": "test@example.com",
   "password": "Abcd1234!",
-  "nickname": "슬몽몽"
+  "nickname": "슬몽몽",
+  "bio": "안녕ㅇ핫요"
 }
 
 ###
@@ -20,7 +21,8 @@ Content-Type: application/json
   "email": "test@example.com",
   "password": "Abcd1234!"
 }
-> {% // 쿠키 자동 저장
+> {%
+    // 쿠키 자동 저장
     client.global.set("JSESSIONID", response.headers.valueOf("Set-Cookie").split(";")[0].split("=")[1]);
     client.log("JSESSIONID : " + client.global.get("JSESSIONID"));
 %}

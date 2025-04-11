@@ -1,11 +1,13 @@
 ### 친구 요청 보내기
-POST http://localhost:8080/api/friends/request/2
+# @no-cookie-jar
+POST http://localhost:8080/api/friends/request/1
 Content-Type: application/json
 Cookie: JSESSIONID={{JSESSIONID}}
 
 ###
 
 ### 친구 요청 취소
+# @no-cookie-jar
 DELETE http://localhost:8080/api/friends/request/2
 Content-Type: application/json
 Cookie: JSESSIONID={{JSESSIONID}}
@@ -13,6 +15,7 @@ Cookie: JSESSIONID={{JSESSIONID}}
 ###
 
 ### 친구 요청 수락
+# @no-cookie-jar
 POST http://localhost:8080/api/friends/status/2/accept
 Content-Type: application/json
 Cookie: JSESSIONID={{JSESSIONID}}
@@ -20,6 +23,7 @@ Cookie: JSESSIONID={{JSESSIONID}}
 ###
 
 ### 친구 요청 거절
+# @no-cookie-jar
 POST http://localhost:8080/api/friends/status/2/reject
 Content-Type: application/json
 Cookie: JSESSIONID={{JSESSIONID}}
@@ -27,6 +31,7 @@ Cookie: JSESSIONID={{JSESSIONID}}
 ###
 
 ### 친구 목록 조회 (ACCEPTED 상태)
+# @no-cookie-jar
 GET http://localhost:8080/api/friends/friend/accept
 Content-Type: application/json
 Cookie: JSESSIONID={{JSESSIONID}}
@@ -34,6 +39,7 @@ Cookie: JSESSIONID={{JSESSIONID}}
 ###
 
 ### 친구 대기 목록 조회 (WAITING 상태)
+# @no-cookie-jar
 GET http://localhost:8080/api/friends/friend/waiting
 Content-Type: application/json
 Cookie: JSESSIONID={{JSESSIONID}}
@@ -41,21 +47,22 @@ Cookie: JSESSIONID={{JSESSIONID}}
 ###
 
 ### 친구 삭제
-DELETE http://localhost:8080/api/friends/friend/3
+# @no-cookie-jar
+DELETE http://localhost:8080/api/friends/friend/1
 Content-Type: application/json
 Cookie: JSESSIONID={{JSESSIONID}}
 
 ###
 
 ### 자기 자신에게 친구 요청 (SelfRequestException)
-POST http://localhost:8080/api/friends/request/1
+POST http://localhost:8080/api/friends/request/3
 Content-Type: application/json
 Cookie: JSESSIONID={{JSESSIONID}}
 
 ###
 
 ### 중복 친구 요청 (DuplicateFriendRequestException)
-POST http://localhost:8080/api/friends/request/2
+POST http://localhost:8080/api/friends/request/1
 Content-Type: application/json
 Cookie: JSESSIONID={{JSESSIONID}}
 
