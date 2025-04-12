@@ -1,10 +1,5 @@
 package com.example.pstagram.controller.user;
 
-import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
-
-import lombok.RequiredArgsConstructor;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttribute;
+
 import com.example.pstagram.common.ResponseCode;
 import com.example.pstagram.config.MessageUtil;
 import com.example.pstagram.dto.common.ApiResponse;
@@ -22,8 +18,13 @@ import com.example.pstagram.dto.user.LoginRequestDto;
 import com.example.pstagram.dto.user.SignUpRequestDto;
 import com.example.pstagram.dto.user.UpdatePasswordRequestDto;
 import com.example.pstagram.dto.user.UserResponseDto;
+import com.example.pstagram.exception.user.AlreadyLoggedInException;
 import com.example.pstagram.exception.user.UnauthorizedException;
 import com.example.pstagram.service.user.UserService;
+
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 /**
  * 사용자 관련 API 요청을 처리하는 컨트롤러
@@ -58,14 +59,21 @@ public class UserController {
 	 * @return 로그인 성공 시 사용자 정보 응답 (공통 응답 구조)
 	 */
 	@PostMapping("/login")
+
 	public ResponseEntity<ApiResponse<UserResponseDto>> login(@Valid @RequestBody LoginRequestDto requestDto,
 		HttpSession session) {
+
+		// 이미 로그인 되어 있다면 로그인 불가 처리
+		if (session.getAttribute("userId") != null) {
+			throw new AlreadyLoggedInException(messageUtil.getMessage(ResponseCode.ALREADY_LOGGED_IN.getMessageKey()));
+		}
+
 		UserResponseDto user = userService.login(requestDto);
 
 		// 세션에 사용자 ID 저장
 		session.setAttribute("userId", user.getId());
 
-		String message = messageUtil.getMessage(ResponseCode.LOGIN_SUCCESS);
+		String message = messageUtil.getMessage(ResponseCode.LOGIN_SUCCESS.getMessageKey());
 		return ResponseEntity.ok(new ApiResponse<>(200, message, user));
 	}
 

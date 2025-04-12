@@ -4,9 +4,9 @@ POST http://localhost:8080/api/users/signup
 Content-Type: application/json
 
 {
-  "email": "test@example.com",
+  "email": "test2@example.com",
   "password": "Abcd1234!",
-  "nickname": "슬몽몽"
+  "nickname": "슬몽몽2"
 }
 
 ###
@@ -17,7 +17,7 @@ POST http://localhost:8080/api/users/login
 Content-Type: application/json
 
 {
-  "email": "test@example.com",
+  "email": "test2@example.com",
   "password": "Abcd1234!"
 }
 > {% // 쿠키 자동 저장

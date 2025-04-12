@@ -1,0 +1,60 @@
+### [1] 회원가입 - user1
+# 회원가입 할 때 두명을 만들어야 테스트 가능 ex. user1, user2
+# @no-cookie-jar
+POST http://localhost:8080/api/users/signup
+Content-Type: application/json
+
+{
+  "email": "user1@example.com",
+  "password": "Abcd1234!",
+  "nickname": "슬몽몽"
+}
+
+
+###
+
+### [2] 로그인 - user1 (세션 생성)
+# @no-cookie-jar
+POST http://localhost:8080/api/users/login
+Content-Type: application/json
+
+{
+  "email": "user1@example.com",
+  "password": "Abcd1234!"
+}
+> {%
+    client.global.set("JSESSIONID", response.headers.valueOf("Set-Cookie").split(";")[0].split("=")[1]);
+    client.log("세션 ID 저장됨: " + client.global.get("JSESSIONID"));
+%}
+
+###
+
+### [3] 로그인 - user2 (로그인 중인데 또 로그인 시도)
+# 이미 로그인한 상태에서 다른 사용자로 로그인 시도 → 실패해야 함
+POST http://localhost:8080/api/users/login
+Content-Type: application/json
+Cookie: JSESSIONID={{JSESSIONID}}
+
+{
+  "email": "user2@example.com",
+  "password": "Abcd1234!"
+}
+
+###
+
+### [4] 로그아웃 - user1
+# 세션 종료
+POST http://localhost:8080/api/users/logout
+Content-Type: application/json
+Cookie: JSESSIONID={{JSESSIONID}}
+
+###
+
+### [5] 로그인 - user2 (이제 가능해야 함)
+POST http://localhost:8080/api/users/login
+Content-Type: application/json
+
+{
+  "email": "user2@example.com",
+  "password": "Abcd1234!"
+}

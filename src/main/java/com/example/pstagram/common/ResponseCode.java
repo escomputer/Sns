@@ -23,6 +23,7 @@ public enum ResponseCode {
 	PASSWORD_SAME("user.password.same"),
 	PASSWORD_UPDATED("user.password.updated"),
 	USER_NOT_FOUND("user.not-found"),
+	ALREADY_LOGGED_IN("user.already.loggedin"),
 
 	//comment
 	//댓글
